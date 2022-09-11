@@ -1,5 +1,5 @@
 {
-  "name": "surrealdb-cloudflare",
+  "name": "@theopensource-company/surrealdb-cloudflare",
   "version": "1.0.0",
   "description": "SurrealDB on cloudflare's edge network!",
   "main": "dist/index.js",
