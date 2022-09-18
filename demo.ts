@@ -22,19 +22,18 @@ export default {
             database: env.DATABASE ?? ''
         });
 
-        await db.createRecordWithId('user', 'micha', {
-            firstname: "Micha",
-            lastname: "de Vries",
-            email: "micha@theopensource.company"
-        });
-
-        await db.updateRecordWithId('user', 'micha', {
-            username: "kearfy"
-        })
-
-        let res = db.getRecords('user');
-
-		console.log((await res)[0].result);
+        console.log("Create record: ", (await db.createRecordWithId('user', 'johndoe', {
+            firstname: "John",
+            lastname: "Doe",
+            email: "john@example.email"
+        }))[0].result);
+    
+        console.log("Update record: ", (await db.updateRecordWithId('user', 'johndoe', {
+            username: "johndoe"
+        }))[0].result)
+    
+        console.log("Retrieve record: ", (await db.getRecords('user'))[0].result)
+        console.log("Delete record: ", (await db.deleteRecordWithId('user', 'johndoe'))[0].result)
 		return new Response("Hello World!");
 	},
 };
