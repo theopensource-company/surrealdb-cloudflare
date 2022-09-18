@@ -14,15 +14,17 @@ export type SurrealResponse<TResponse = any> = Array<{
 
 class ConnectionError extends Error{};
 
-export class Surreal {
+export class Surreal<TFetcher = typeof fetch> {
     private host?: string;
     private username?: string;
     private password?: string;
     private namespace?: string;
     private database?: string;
+    private fetcher?: TFetcher;
 
-    constructor(config?: SurrealConfig) {
+    constructor(config?: SurrealConfig, fetcher?: TFetcher) {
         if (config) this.connect(config);
+        if (fetcher) this.fetcher = fetcher;
     }
     
     // Define connection variables
@@ -115,7 +117,7 @@ export class Surreal {
         body?: Object | string;
     }): Promise<SurrealResponse<TResponse>> {
         if (!this.connected()) throw new ConnectionError("The Surreal instance has not yet been connected");
-        return (await fetch(`${options?.host ?? this.host!}/${path.startsWith('/') ? path.slice(1) : path}`, {
+        return (await (this.fetcher ? this.fetcher as any : fetch)(`${options?.host ?? this.host!}/${path.startsWith('/') ? path.slice(1) : path}`, {
             method: options?.method ?? "POST",
             headers: {
                 'Authorization': `Basic ${btoa(`${options?.username ?? this.username!}:${options?.username ?? this.password!}`)}`,

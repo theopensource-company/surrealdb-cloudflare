@@ -61,9 +61,11 @@ var ConnectionError = /** @class */ (function (_super) {
 }(Error));
 ;
 var Surreal = /** @class */ (function () {
-    function Surreal(config) {
+    function Surreal(config, fetcher) {
         if (config)
             this.connect(config);
+        if (fetcher)
+            this.fetcher = fetcher;
     }
     // Define connection variables
     Surreal.prototype.connect = function (config) {
@@ -200,7 +202,7 @@ var Surreal = /** @class */ (function () {
                     case 0:
                         if (!this.connected())
                             throw new ConnectionError("The Surreal instance has not yet been connected");
-                        return [4 /*yield*/, fetch("".concat((_a = options === null || options === void 0 ? void 0 : options.host) !== null && _a !== void 0 ? _a : this.host, "/").concat(path.startsWith('/') ? path.slice(1) : path), {
+                        return [4 /*yield*/, (this.fetcher ? this.fetcher : fetch)("".concat((_a = options === null || options === void 0 ? void 0 : options.host) !== null && _a !== void 0 ? _a : this.host, "/").concat(path.startsWith('/') ? path.slice(1) : path), {
                                 method: (_b = options === null || options === void 0 ? void 0 : options.method) !== null && _b !== void 0 ? _b : "POST",
                                 headers: {
                                     'Authorization': "Basic ".concat(btoa("".concat((_c = options === null || options === void 0 ? void 0 : options.username) !== null && _c !== void 0 ? _c : this.username, ":").concat((_d = options === null || options === void 0 ? void 0 : options.username) !== null && _d !== void 0 ? _d : this.password))),

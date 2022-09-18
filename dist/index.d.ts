@@ -10,13 +10,14 @@ export declare type SurrealResponse<TResponse = any> = Array<{
     status: string;
     result: TResponse;
 }>;
-export declare class Surreal {
+export declare class Surreal<TFetcher = typeof fetch> {
     private host?;
     private username?;
     private password?;
     private namespace?;
     private database?;
-    constructor(config?: SurrealConfig);
+    private fetcher?;
+    constructor(config?: SurrealConfig, fetcher?: TFetcher);
     connect(config: SurrealConfig): void;
     connected(): boolean;
     query<TResponse = any>(query: string): Promise<SurrealResponse<TResponse>>;
