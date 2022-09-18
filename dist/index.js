@@ -60,6 +60,14 @@ var ConnectionError = /** @class */ (function (_super) {
     return ConnectionError;
 }(Error));
 ;
+var createAuthorization = function (username, password) {
+    try {
+        return "Basic ".concat(btoa("".concat(username, ":").concat(password)));
+    }
+    catch (err) {
+        return "Basic ".concat(Buffer.from("".concat(username, ":").concat(password)).toString('base64'));
+    }
+};
 var Surreal = /** @class */ (function () {
     function Surreal(config, fetcher) {
         if (config)
@@ -205,7 +213,7 @@ var Surreal = /** @class */ (function () {
                         return [4 /*yield*/, (this.fetcher ? this.fetcher : fetch)("".concat((_a = options === null || options === void 0 ? void 0 : options.host) !== null && _a !== void 0 ? _a : this.host, "/").concat(path.startsWith('/') ? path.slice(1) : path), {
                                 method: (_b = options === null || options === void 0 ? void 0 : options.method) !== null && _b !== void 0 ? _b : "POST",
                                 headers: {
-                                    'Authorization': "Basic ".concat(btoa("".concat((_c = options === null || options === void 0 ? void 0 : options.username) !== null && _c !== void 0 ? _c : this.username, ":").concat((_d = options === null || options === void 0 ? void 0 : options.username) !== null && _d !== void 0 ? _d : this.password))),
+                                    'Authorization': createAuthorization((_c = options === null || options === void 0 ? void 0 : options.username) !== null && _c !== void 0 ? _c : this.username, (_d = options === null || options === void 0 ? void 0 : options.username) !== null && _d !== void 0 ? _d : this.password),
                                     'Content-Type': 'application/json',
                                     'NS': (_e = options === null || options === void 0 ? void 0 : options.namespace) !== null && _e !== void 0 ? _e : this.namespace,
                                     'DB': (_f = options === null || options === void 0 ? void 0 : options.database) !== null && _f !== void 0 ? _f : this.database

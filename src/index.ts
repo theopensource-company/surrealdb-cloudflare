@@ -14,6 +14,14 @@ export type SurrealResponse<TResponse = any> = Array<{
 
 class ConnectionError extends Error{};
 
+const createAuthorization = (username: string, password: string) => {
+    try {
+      return `Basic ${btoa(`${username}:${password}`)}`;
+    } catch (err) {
+      return `Basic ${Buffer.from(`${username}:${password}`).toString('base64')}`;
+    }
+};
+
 export class Surreal<TFetcher = typeof fetch> {
     private host?: string;
     private username?: string;
@@ -120,7 +128,7 @@ export class Surreal<TFetcher = typeof fetch> {
         return (await (this.fetcher ? this.fetcher as any : fetch)(`${options?.host ?? this.host!}/${path.startsWith('/') ? path.slice(1) : path}`, {
             method: options?.method ?? "POST",
             headers: {
-                'Authorization': `Basic ${btoa(`${options?.username ?? this.username!}:${options?.username ?? this.password!}`)}`,
+                'Authorization': createAuthorization(options?.username ?? this.username!, options?.username ?? this.password!),
                 'Content-Type': 'application/json',
                 'NS': options?.namespace ?? this.namespace!,
                 'DB': options?.database ?? this.database!
