@@ -5,11 +5,18 @@ export declare type SurrealConfig = {
     namespace: string;
     database: string;
 };
-export declare type SurrealResponse<TResponse = any> = Array<{
+export declare type SurrealQueryOK<TResult = any> = {
     time: string;
-    status: string;
-    result: TResponse;
-}>;
+    status: "OK";
+    result: TResult;
+};
+export declare type SurrealQueryERR = {
+    time: string;
+    status: "ERR";
+    detail: string;
+};
+export declare type SurrealQueryResult<TResult = any> = SurrealQueryOK<TResult> | SurrealQueryERR;
+export declare type SurrealResponse<TResult = any> = Array<SurrealQueryResult<TResult>>;
 export declare class Surreal<TFetcher = typeof fetch> {
     private host?;
     private username?;
@@ -20,15 +27,15 @@ export declare class Surreal<TFetcher = typeof fetch> {
     constructor(config?: SurrealConfig, fetcher?: TFetcher);
     connect(config: SurrealConfig): void;
     connected(): boolean;
-    query<TResponse = any>(query: string): Promise<SurrealResponse<TResponse>>;
-    getRecords<TResponse = any>(table: string): Promise<SurrealResponse<TResponse>>;
-    createRecord<TResponse = any>(table: string, data: Object): Promise<SurrealResponse<TResponse>>;
-    deleteRecords<TResponse = any>(table: string): Promise<SurrealResponse<TResponse>>;
-    getRecordWithId<TResponse = any>(table: string, id: string | number): Promise<SurrealResponse<TResponse>>;
-    createRecordWithId<TResponse = any>(table: string, id: string | number, data: Object): Promise<SurrealResponse<TResponse>>;
-    setRecordWithId<TResponse = any>(table: string, id: string | number, data: Object): Promise<SurrealResponse<TResponse>>;
-    updateRecordWithId<TResponse = any>(table: string, id: string | number, data: Object): Promise<SurrealResponse<TResponse>>;
-    deleteRecordWithId<TResponse = any>(table: string, id: string | number): Promise<SurrealResponse<TResponse>>;
+    query<TResult = any>(query: string): Promise<SurrealResponse<TResult>>;
+    getRecords<TResult = any>(table: string): Promise<SurrealResponse<TResult>>;
+    createRecord<TResult = any>(table: string, data: Object): Promise<SurrealResponse<TResult>>;
+    deleteRecords<TResult = any>(table: string): Promise<SurrealResponse<TResult>>;
+    getRecordWithId<TResult = any>(table: string, id: string | number): Promise<SurrealResponse<TResult>>;
+    createRecordWithId<TResult = any>(table: string, id: string | number, data: Object): Promise<SurrealResponse<TResult>>;
+    setRecordWithId<TResult = any>(table: string, id: string | number, data: Object): Promise<SurrealResponse<TResult>>;
+    updateRecordWithId<TResult = any>(table: string, id: string | number, data: Object): Promise<SurrealResponse<TResult>>;
+    deleteRecordWithId<TResult = any>(table: string, id: string | number): Promise<SurrealResponse<TResult>>;
     private request;
 }
 export default Surreal;

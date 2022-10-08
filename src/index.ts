@@ -6,11 +6,20 @@ export type SurrealConfig = {
     database: string;
 };
 
-export type SurrealResponse<TResponse = any> = Array<{
+export type SurrealQueryOK<TResult = any> = {
     time: string;
-    status: string;
-    result: TResponse;
-}>;
+    status: "OK";
+    result: TResult;
+};
+
+export type SurrealQueryERR = {
+    time: string;
+    status: "ERR";
+    detail: string;
+};
+
+export type SurrealQueryResult<TResult = any> = SurrealQueryOK<TResult> | SurrealQueryERR;
+export type SurrealResponse<TResult = any> = Array<SurrealQueryResult<TResult>>;
 
 class ConnectionError extends Error{};
 
@@ -51,71 +60,71 @@ export class Surreal<TFetcher = typeof fetch> {
 
     // General query function
 
-    async query<TResponse = any>(query: string) {
-        return (await this.request<TResponse>('sql', {
+    async query<TResult = any>(query: string) {
+        return (await this.request<TResult>('sql', {
             body: query
         }));
     }
 
     // Table functions affecting all records
 
-    async getRecords<TResponse = any>(table: string) {
-        return (await this.request<TResponse>(`key/${table}`, {
+    async getRecords<TResult = any>(table: string) {
+        return (await this.request<TResult>(`key/${table}`, {
             method: "GET"
         }));
     }
 
-    async createRecord<TResponse = any>(table: string, data: Object) {
-        return (await this.request<TResponse>(`key/${table}`, {
+    async createRecord<TResult = any>(table: string, data: Object) {
+        return (await this.request<TResult>(`key/${table}`, {
             method: "POST",
             body: data
         }));
     }
 
-    async deleteRecords<TResponse = any>(table: string) {
-        return (await this.request<TResponse>(`key/${table}`, {
+    async deleteRecords<TResult = any>(table: string) {
+        return (await this.request<TResult>(`key/${table}`, {
             method: "DELETE"
         }));
     }
 
     // Table functions affecting specific records
 
-    async getRecordWithId<TResponse = any>(table: string, id: string | number) {
-        return (await this.request<TResponse>(`key/${table}/${id}`, {
+    async getRecordWithId<TResult = any>(table: string, id: string | number) {
+        return (await this.request<TResult>(`key/${table}/${id}`, {
             method: "GET"
         }));
     }
 
-    async createRecordWithId<TResponse = any>(table: string, id: string | number, data: Object) {
-        return (await this.request<TResponse>(`key/${table}/${id}`, {
+    async createRecordWithId<TResult = any>(table: string, id: string | number, data: Object) {
+        return (await this.request<TResult>(`key/${table}/${id}`, {
             method: "POST",
             body: data
         }));
     }
 
-    async setRecordWithId<TResponse = any>(table: string, id: string | number, data: Object) {
-        return (await this.request<TResponse>(`key/${table}/${id}`, {
+    async setRecordWithId<TResult = any>(table: string, id: string | number, data: Object) {
+        return (await this.request<TResult>(`key/${table}/${id}`, {
             method: "PUT",
             body: data
         }));
     }
 
-    async updateRecordWithId<TResponse = any>(table: string, id: string | number, data: Object) {
-        return (await this.request<TResponse>(`key/${table}/${id}`, {
+    async updateRecordWithId<TResult = any>(table: string, id: string | number, data: Object) {
+        return (await this.request<TResult>(`key/${table}/${id}`, {
             method: "PATCH",
             body: data
         }));
     }
 
-    async deleteRecordWithId<TResponse = any>(table: string, id: string | number) {
-        return (await this.request<TResponse>(`key/${table}/${id}`, {
+    async deleteRecordWithId<TResult = any>(table: string, id: string | number) {
+        return (await this.request<TResult>(`key/${table}/${id}`, {
             method: "DELETE"
         }));
     }
 
     // Request function interfacing with surreal HTTP api
 
-    private async request<TResponse = any>(path: string, options?: {
+    private async request<TResult = any>(path: string, options?: {
         host?: string;
         username?: string;
         password?: string;
@@ -123,7 +132,7 @@ export class Surreal<TFetcher = typeof fetch> {
         database?: string;
         method?: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
         body?: Object | string;
-    }): Promise<SurrealResponse<TResponse>> {
+    }): Promise<SurrealResponse<TResult>> {
         if (!this.connected()) throw new ConnectionError("The Surreal instance has not yet been connected");
         return (await (this.fetcher ? this.fetcher as any : fetch)(`${options?.host ?? this.host!}/${path.startsWith('/') ? path.slice(1) : path}`, {
             method: options?.method ?? "POST",
