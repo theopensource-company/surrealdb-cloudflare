@@ -92,6 +92,7 @@ var Surreal = /** @class */ (function () {
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0: return [4 /*yield*/, this.request('sql', {
+                            plainBody: true,
                             body: query
                         })];
                     case 1: return [2 /*return*/, (_a.sent())];
@@ -214,7 +215,8 @@ var Surreal = /** @class */ (function () {
                                 method: (_b = options === null || options === void 0 ? void 0 : options.method) !== null && _b !== void 0 ? _b : "POST",
                                 headers: {
                                     'Authorization': createAuthorization((_c = options === null || options === void 0 ? void 0 : options.username) !== null && _c !== void 0 ? _c : this.username, (_d = options === null || options === void 0 ? void 0 : options.username) !== null && _d !== void 0 ? _d : this.password),
-                                    'Content-Type': 'application/json',
+                                    'Content-Type': (options === null || options === void 0 ? void 0 : options.plainBody) ? 'text/plain' : 'application/json',
+                                    'Accept': 'application/json',
                                     'NS': (_e = options === null || options === void 0 ? void 0 : options.namespace) !== null && _e !== void 0 ? _e : this.namespace,
                                     'DB': (_f = options === null || options === void 0 ? void 0 : options.database) !== null && _f !== void 0 ? _f : this.database
                                 },

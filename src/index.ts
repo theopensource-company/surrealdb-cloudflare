@@ -62,6 +62,7 @@ export class Surreal<TFetcher = typeof fetch> {
 
     async query<TResult = any>(query: string) {
         return (await this.request<TResult>('sql', {
+            plainBody: true,
             body: query
         }));
     }
@@ -131,6 +132,7 @@ export class Surreal<TFetcher = typeof fetch> {
         namespace?: string;
         database?: string;
         method?: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
+        plainBody?: boolean;
         body?: Object | string;
     }): Promise<SurrealResponse<TResult>> {
         if (!this.connected()) throw new ConnectionError("The Surreal instance has not yet been connected");
@@ -138,7 +140,8 @@ export class Surreal<TFetcher = typeof fetch> {
             method: options?.method ?? "POST",
             headers: {
                 'Authorization': createAuthorization(options?.username ?? this.username!, options?.username ?? this.password!),
-                'Content-Type': 'application/json',
+                'Content-Type': options?.plainBody ? 'text/plain' : 'application/json',
+                'Accept': 'application/json',
                 'NS': options?.namespace ?? this.namespace!,
                 'DB': options?.database ?? this.database!
             },
